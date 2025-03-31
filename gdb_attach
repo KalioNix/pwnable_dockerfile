@@ -1,0 +1,27 @@
+# !/bin/bash
+## Attach gdb to process automatically 
+## gdb_attach [파일명] [프로세스명]
+
+# 인자 개수에 따라 분기
+if [ $# -eq 0 ]; then
+    # 1) 인자가 없는 경우
+    /usr/bin/gdb -q
+
+elif [ $# -eq 1 ]; then
+    # 2) 인자가 1개인 경우 - 파일 이름을 gdb로 실행
+    /usr/bin/gdb -q "$1"
+
+elif [ $# -eq 2 ]; then
+    # 3) 인자가 2개인 경우 - 두 번째 인자를 통해 PID를 구해 gdb attach
+    pid=$(pgrep "$2")
+    if [ -z "$pid" ]; then
+        echo "프로세스 이름 '$2'로는 PID를 찾을 수 없습니다."
+        exit 1
+    fi
+    /usr/bin/gdb -q -p "$pid"
+
+else
+    # 인자가 3개 이상인 경우(예외 처리)
+    echo "사용법: $0 [실행파일] [프로세스명]"
+    exit 1
+fi
