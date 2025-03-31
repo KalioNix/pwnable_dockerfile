@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+## Create docker container with port open from Dockerfile automatically
+## drun [컨테이너명]
+
+# 스크립트 사용법
+if [ -z "$1" ]; then
+  echo "Usage: $0 <name>"
+  exit 1
+fi
+
+IMAGE_NAME="$1"
+
+# 1) Dockerfile 빌드
+docker build -t "$IMAGE_NAME" .
+
+# 2) Dockerfile에서 EXPOSE된 포트를 찾기 (첫 번째 EXPOSE만 사용)
+PORT=$(grep -E '^EXPOSE ' Dockerfile 2>/dev/null | awk '{print $2}' | head -n 1)
+
+# 3) 컨테이너 실행
+if [ -n "$PORT" ]; then
+  echo "Detected EXPOSE port: $PORT"
+  docker run -itd -p 1234:"$PORT" --name "$IMAGE_NAME" "$IMAGE_NAME"
+else
+  docker run -itd --name "$IMAGE_NAME" "$IMAGE_NAME"
+fi
