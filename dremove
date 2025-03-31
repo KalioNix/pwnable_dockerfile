@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+## Remove docker container and image automatically
+## dremove [컨테이너명]
+  
+# 사용법 체크
+if [ -z "$1" ]; then
+  echo "Usage: $0 <name>"
+  exit 1
+fi
+
+NAME="$1"
+
+# 1) 컨테이너 제거
+#    - 정확히 NAME과 일치하는 컨테이너 조회
+CONTAINER_ID=$(docker ps -a --filter="name=^${NAME}$" -q)
+if [ -n "$CONTAINER_ID" ]; then
+  echo "Removing container(s) with name: $NAME"
+  docker rm -f "$CONTAINER_ID"
+else
+  echo "No container found with name: $NAME"
+fi
+
+# 2) 이미지 제거
+#    - 이미지 이름이 NAME과 일치하는 이미지 조회
+IMAGE_ID=$(docker images -q "$NAME")
+if [ -n "$IMAGE_ID" ]; then
+  echo "Removing image: $NAME"
+  docker rmi "$IMAGE_ID"
+else
+  echo "No image found with name: $NAME"
+fi
+
