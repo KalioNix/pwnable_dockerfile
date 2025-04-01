@@ -18,7 +18,7 @@ elif [ $# -eq 2 ]; then
         echo "프로세스 이름 '$2'로는 PID를 찾을 수 없습니다."
         exit 1
     fi
-    /usr/bin/gdb -q -p "$pid"
+    /usr/bin/gdb -q "$1" -p "$pid"
 
 else
     # 인자가 3개 이상인 경우(예외 처리)
